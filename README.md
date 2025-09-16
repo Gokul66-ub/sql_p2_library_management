@@ -111,7 +111,7 @@ ADD COLUMN issued_book_name VARCHAR(80)
 - **Update**: Updated records in the `employees` table.
 - **Delete**: Removed records from the `members` table as needed.
 
-** 1. Create a New Book Record**
+**1. Create a New Book Record**
 ```sql
 INSERT INTO books(isbn, book_title, category, rental_price, status, author, publisher)
 VALUES('978-0-45228-849-0', 'Pride and Prejudice', 'Romance', 5.50, 'yes', 'Jane Austen', 'T. Egerton, Whitehall'),
@@ -142,7 +142,7 @@ SELECT * FROM members;
 
 ### 3. CTAS (Create Table As Select)
 
--- **Create Summary Tables**: Used CTAS to generate new tables based on query results - each book and total book_issued_cnt**
+- **Create Summary Tables**: Used CTAS to generate new tables based on query results - each book and total book_issued_cnt**
 
 ```sql
 CREATE TABLE book_issued_count as
