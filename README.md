@@ -26,7 +26,7 @@ This project demonstrates the implementation of a Library Management System usin
 - **Database Creation**: Created a database named `library_management`.
 - **Table Creation**: Created tables for branches, employees, members, books, issued status, and return status. Each table includes relevant columns and relationships.
 
-'''sql
+```sql
 CREATE DATABASE library_management;
 
 USE library_management;
@@ -100,8 +100,8 @@ CREATE TABLE return_status
 -- add new column to issued_status
 ALTER TABLE issued_status
 ADD COLUMN issued_book_name VARCHAR(80)
-
-'''
+```
+```sql
 -- 2.CRUD OPERATION
 
 -- 1.CREATE NEW RECORD
@@ -126,8 +126,8 @@ WHERE   issued_id =   'IS121';
 -- 4.RETRIEVE RECORDS 
 '''sql
 SELECT * FROM members;
-'''
-
+```
+```sql
 --3.CTAS (Create Table As Select)
 
 **Create Summary Tables**: Used CTAS to generate new tables based on query results - each book and total book_issued_cnt**
@@ -139,4 +139,4 @@ FROM books b
 INNER JOIN issued_status i
 ON b.isbn=i.issued_book_isbn
 GROUP BY b.isbn,b.book_title
-'''
+```
