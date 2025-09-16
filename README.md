@@ -101,38 +101,50 @@ CREATE TABLE return_status
 ALTER TABLE issued_status
 ADD COLUMN issued_book_name VARCHAR(80)
 ```
+
 ```sql
--- 2.CRUD OPERATION
 
--- 1.CREATE NEW RECORD
+### 2. CRUD Operations
 
-'''sql
+- **Create**: Inserted sample records into the `books` table.
+- **Read**: Retrieved and displayed data from various tables.
+- **Update**: Updated records in the `employees` table.
+- **Delete**: Removed records from the `members` table as needed.
+
+** 1. Create a New Book Record**
+```sql
 INSERT INTO books(isbn, book_title, category, rental_price, status, author, publisher)
 VALUES('978-0-45228-849-0', 'Pride and Prejudice', 'Romance', 5.50, 'yes', 'Jane Austen', 'T. Egerton, Whitehall'),
 VALUES('978-0-7432-7356-5', 'The Great Gatsby', 'Classic', 5.75, 'yes', 'F. Scott Fitzgerald', 'Charles Scribner\'s Sons');
-'''
--- 2.UPDATE RECORD
+SELECT * FROM books;
+```
+**2: Update an Existing Member's Address**
 
-'''sql
+```sql
 UPDATE members
 SET member_address = '125 Oak St'
 WHERE member_id = 'C103';
-'''
--- 3.DELETE A RECORD
-'''sql
+```
+
+**3: Delete a Record from the Issued Status Table**
+-- Objective: Delete the record with issued_id = 'IS121' from the issued_status table.
+
+```sql
 DELETE FROM issued_status
-WHERE   issued_id =   'IS121';
-'''
--- 4.RETRIEVE RECORDS 
-'''sql
+WHERE  issued_id =   'IS121';
+```
+
+**4: Retrieve All records from Members table**
+
+```sql
 SELECT * FROM members;
 ```
+
+### 3. CTAS (Create Table As Select)
+
+- **Create Summary Tables**: Used CTAS to generate new tables based on query results - each book and total book_issued_cnt**
+
 ```sql
---3.CTAS (Create Table As Select)
-
-**Create Summary Tables**: Used CTAS to generate new tables based on query results - each book and total book_issued_cnt**
-
-'''sql
 CREATE TABLE book_issued_count as
 SELECT b.isbn,b.book_title,count(*) as TOTAL_BOOK_ISSUED
 FROM books b
