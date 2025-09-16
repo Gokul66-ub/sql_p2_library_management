@@ -142,7 +142,7 @@ SELECT * FROM members;
 
 ### 3. CTAS (Create Table As Select)
 
-- **Create Summary Tables**: Used CTAS to generate new tables based on query results - each book and total book_issued_cnt**
+- **Create Summary Tables**: Used CTAS to generate new tables based on query results - each book and total book_issued_cnt
 
 ```sql
 CREATE TABLE book_issued_count as
