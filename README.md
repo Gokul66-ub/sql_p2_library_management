@@ -18,4 +18,3 @@ This project demonstrates the implementation of a Library Management System usin
 4. **Advanced SQL Queries**: Develop complex queries to analyze and retrieve specific data.
 
 
-<img src="./library_image.png" alt="A descriptive caption for the library image" width="500">
