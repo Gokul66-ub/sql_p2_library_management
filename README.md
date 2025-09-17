@@ -154,7 +154,7 @@ GROUP BY b.isbn,b.book_title
 ```
 ### 4.Data Analysis and Finding
 
-**1: Retrieve All Books based on Category**
+**1. Retrieve All Books based on Category**
 ```sql
 
 SELECT 
@@ -163,4 +163,120 @@ SELECT
 FROM books
 GROUP BY category
 ORDER BY category;
+```
+**2.Find Total Rental Income by Category**
+
+```sql
+SELECT b.category,count(*) as TOTAL_BOOKS,SUM(b.rental_price) as TOTAL_RENTAL_INCOME
+FROM books b
+INNER JOIN issued_status i
+ON b.isbn=i.issued_book_isbn
+GROUP BY b.category
+```
+**3. List Members Who Registered in the after 2024**
+
+```sql
+
+SELECT member_id,member_name
+FROM members
+where YEAR(reg_date)>=2024
+```
+**4.List Employees with Their Branch Manager's Name and their branch details**
+
+```sql
+SELECT 
+    e1.emp_id,e1.emp_name,e1.position,
+    e2.emp_name as manager_name,b1.*
+FROM employees e1
+INNER JOIN branch b1
+ON e1.branch_id=b1.branch_id
+INNER JOIN employees e2
+ON e2.emp_id=b1.manager_id
+```
+**5.Create a Table of Books with Rental Price Above a Certain Threshold**
+```sql
+
+CREATE TABLE expensive_books AS
+SELECT * FROM books
+WHERE rental_price>=7
+```
+**6.Retrieve the List of Books Not Yet Returned**
+```sql
+SELECT i.issued_book_name as NOT_RETURNED_BOOKS
+FROM issued_status i
+LEFT JOIN return_status r
+ON i.issued_id=r.issued_id
+where r.issued_id is null
+```
+**7.Write a query to identify members who have overdue books (assume a 30-day return period). Display the member's name, book title, issue date, and days overdue.**
+
+```sql
+WITH overdue_books AS (
+    SELECT 
+        i.issued_id,
+        i.issued_book_isbn,
+        i.issued_date,
+        i.issued_member_id,
+        b.book_title,
+        r.return_date,
+        DATEDIFF(COALESCE(r.return_date,CURDATE()), i.issued_date) AS no_of_days
+    FROM issued_status i
+    JOIN books b 
+        ON i.issued_book_isbn = b.isbn
+    LEFT JOIN return_status r 
+        ON i.issued_id = r.issued_id
+)
+SELECT 
+    ob.issued_member_id,
+    m.member_name,
+    ob.book_title,
+    ob.issued_date,
+    ob.no_of_days AS days_overdue,
+    CASE 
+        WHEN return_date is not null then 'Returned' else 'Not Returned' END AS status_of_book
+FROM overdue_books ob
+JOIN members m 
+    ON ob.issued_member_id = m.member_id
+WHERE no_of_days>30
+ORDER BY status_of_book,ob.issued_member_id
+```
+**8. Write a query to update the status of books in the books table to "Yes" when they are returned (based on entries in the return_status table).**
+
+```sql
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS add_return_records $$
+
+CREATE PROCEDURE add_return_records(
+    IN new_return_id VARCHAR(6),
+    IN o_issued_id VARCHAR(6)
+)
+BEGIN
+    DECLARE v_isbn VARCHAR(50);
+    DECLARE v_book_name VARCHAR(80);
+
+    -- Insert into return_status
+    INSERT INTO return_status(return_id, issued_id, return_date)
+    VALUES(new_return_id, o_issued_id, CURRENT_DATE);
+
+    -- Get book details
+    SELECT issued_book_isbn, issued_book_name
+    INTO v_isbn, v_book_name
+    FROM issued_status
+    WHERE issued_id = o_issued_id;
+
+    -- Update book availability
+    UPDATE books
+    SET status = 'yes'
+    WHERE isbn = v_isbn;
+
+    -- Return message
+    SELECT CONCAT('Thank you for returning the book: ', v_book_name) AS message;
+
+END $$
+
+DELIMITER ;
+
+--call the procedure
+CALL add_return_records('RS139','IS131');
 ```
