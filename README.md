@@ -152,3 +152,15 @@ INNER JOIN issued_status i
 ON b.isbn=i.issued_book_isbn
 GROUP BY b.isbn,b.book_title
 ```
+### 4.Data Analysis and Finding
+
+**1: Retrieve All Books based on Category**
+```sql
+
+SELECT 
+    CATEGORY,
+    GROUP_CONCAT(book_title SEPARATOR ', ') AS BOOK_LIST
+FROM books
+GROUP BY category
+ORDER BY category;
+```
