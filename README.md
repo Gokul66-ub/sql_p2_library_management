@@ -280,3 +280,129 @@ DELIMITER ;
 --call the procedure
 CALL add_return_records('RS139','IS131');
 ```
+**9.Create a query that generates a performance report for each branch, showing the number of books issued, the number of books returned, and the total revenue generated from book rentals.**
+
+```sql
+
+SELECT 
+    b.branch_id,
+    b.manager_id,
+    COUNT(DISTINCT ist.issued_id) as number_book_issued,
+    COUNT(DISTINCT rs.return_id) as number_of_book_return,
+    SUM(bk.rental_price) as total_revenue
+FROM issued_status as ist
+JOIN 
+employees as e
+ON e.emp_id = ist.issued_emp_id
+JOIN
+branch as b
+ON e.branch_id = b.branch_id
+LEFT JOIN
+return_status as rs
+ON rs.issued_id = ist.issued_id
+JOIN 
+books as bk
+ON ist.issued_book_isbn = bk.isbn
+GROUP BY 1, 2;
+```
+**10.Create a Query that  containing members who have issued at least one book in the last 18 months.**
+```sql
+SELECT * FROM members
+WHERE member_id IN (
+    select DISTINCT issued_member_id
+    from issued_status
+    where issued_date>=DATE_SUB(CURRENT_DATE,INTERVAL 18 MONTH)
+)
+```
+**11.Write a query to find the top 3 employees who have processed the most book issues. Display the employee name, number of books processed, and their branch.**
+```sql
+SELECT issued_emp_id as employee_id,e1.emp_name as name,b1.*,count(*) as book_issued
+FROM issued_status i1
+INNER JOIN employees e1
+ON i1.issued_emp_id=e1.emp_id
+INNER JOIN branch b1
+USING (branch_id)
+GROUP BY i1.issued_emp_id
+ORDER BY book_issued desc
+LIMIT 3;
+```
+**12.Create a stored procedure to manage the status of books in a library system. Description: Write a stored procedure that updates the status of a book in the library based on its issuance. The procedure should function as follows: The stored procedure should take the book_id as an input parameter. The procedure should first check if the book is available (status = 'yes'). If the book is available, it should be issued, and the status in the books table should be updated to 'no'. If the book is not available (status = 'no'), the procedure should return an error message indicating that the book is currently not available.**
+```sql
+CREATE PROCEDURE book_issue(
+    IN n_issued_id VARCHAR(6),
+    IN n_issued_member_id VARCHAR(6),
+    IN n_issued_book_isbn VARCHAR(20),
+    IN n_issued_emp_id VARCHAR(6)
+)
+BEGIN
+    DECLARE v_status VARCHAR(20);
+    DECLARE v_book_title VARCHAR(80);
+
+    -- Get book status and title
+    SELECT status, book_title
+    INTO v_status, v_book_title
+    FROM books
+    WHERE isbn = n_issued_book_isbn
+    LIMIT 1;
+
+    -- Check if book is available
+    IF v_status = 'yes' THEN
+        INSERT INTO issued_status(
+            issued_id,
+            issued_member_id,
+            issued_book_isbn,
+            issued_date,
+            issued_emp_id,
+            issued_book_name
+        )
+        VALUES(
+            n_issued_id,
+            n_issued_member_id,
+            n_issued_book_isbn,
+            CURRENT_DATE,
+            n_issued_emp_id,
+            v_book_title   
+        );
+
+        UPDATE books
+        SET status = 'no'
+        WHERE isbn = n_issued_book_isbn;
+
+        SELECT CONCAT(v_book_title, ' is successfully issued') AS message;
+    ELSE
+        SELECT CONCAT(v_book_title, ' is currently unavailable') AS message;
+    END IF;
+END;
+
+--Call the procedure
+
+CALL book_issue('IS141','C111','978-0-09-957807-9','E105')
+```
+**13.Description: Write a CTAS query to create a new table that lists each member and the books they have issued but not returned within 30 days. The table should include: The number of overdue books. The total fines, with each day's fine calculated at $0.50. The number of books issued by each member. The resulting table should show: Member ID Number of overdue books Total fines**
+```sql
+CREATE TABLE IF NOT EXISTS member_overdue_summary
+WITH overdue_books AS (
+    SELECT 
+        i.issued_member_id,
+        DATEDIFF(COALESCE(r.return_date,CURDATE()), i.issued_date) AS no_of_days
+    FROM issued_status i
+    JOIN books b 
+        ON i.issued_book_isbn = b.isbn
+    LEFT JOIN return_status r 
+        ON i.issued_id = r.issued_id
+)
+SELECT 
+    ob.issued_member_id as member_id,
+    m.member_name,
+    count(*) as No_of_overdue_books,
+    sum(no_of_days) as total_days,
+    sum((no_of_days-30)*0.50) as Total_fine
+    
+FROM overdue_books ob
+JOIN members m 
+    ON ob.issued_member_id = m.member_id
+WHERE no_of_days>30
+GROUP BY member_id,m.member_name
+ORDER BY member_id;
+```
+
