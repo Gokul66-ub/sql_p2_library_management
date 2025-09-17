@@ -1,7 +1,7 @@
 
 -- Project Task
 
--- Task 1. Create a New Book Record -- "978-1-60129-456-2', 'To Kill a Mockingbird', 'Classic', 6.00, 'yes', 'Harper Lee', 'J.B. Lippincott & Co.')"
+-- Task 1. Create a New Book Record
 
 INSERT INTO books(isbn, book_title, category, rental_price, status, author, publisher)
 VALUES('978-0-45228-849-0', 'Pride and Prejudice', 'Romance', 5.50, 'yes', 'Jane Austen', 'T. Egerton, Whitehall'),
@@ -216,8 +216,6 @@ WHERE issued_id = 'IS135';
 
 -- calling function 
 CALL add_return_records('RS138', 'IS135');
-
-
 
 -- calling function 
 CALL add_return_records('RS148', 'IS140', 'Good');
