@@ -327,7 +327,9 @@ ORDER BY book_issued desc
 LIMIT 3;
 ```
 **12.Create a stored procedure to manage the status of books in a library system. Description: Write a stored procedure that updates the status of a book in the library based on its issuance. The procedure should function as follows: The stored procedure should take the book_id as an input parameter. The procedure should first check if the book is available (status = 'yes'). If the book is available, it should be issued, and the status in the books table should be updated to 'no'. If the book is not available (status = 'no'), the procedure should return an error message indicating that the book is currently not available.**
+
 ```sql
+DELIMITER $$
 CREATE PROCEDURE book_issue(
     IN n_issued_id VARCHAR(6),
     IN n_issued_member_id VARCHAR(6),
@@ -372,7 +374,8 @@ BEGIN
     ELSE
         SELECT CONCAT(v_book_title, ' is currently unavailable') AS message;
     END IF;
-END;
+END $$
+DELIMITER ;
 
 --Call the procedure
 
