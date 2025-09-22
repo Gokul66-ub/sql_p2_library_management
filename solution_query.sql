@@ -113,16 +113,6 @@ LEFT JOIN return_status r
 ON i.issued_id=r.issued_id
 where r.issued_id is null
 
-
--- SQL Project - Library Management System N2
-
-SELECT * FROM books;
-SELECT * FROM branch;
-SELECT * FROM employees;
-SELECT * FROM issued_status;
-SELECT * FROM members;
-SELECT * FROM return_status;
-
 /*
 Task 13: 
 Identify Members with Overdue Books
@@ -380,7 +370,48 @@ WHERE no_of_days>30
 GROUP BY member_id,m.member_name
 ORDER BY member_id;
 
-    
+/*
+Task 20:Find the top 3 members in each branch who borrowed the most books,along with their rank, total borrowed count, and overdue percentage
+*/
 
+WITH members_branch AS (
+    SELECT
+        b1.branch_id,
+        m1.member_id,
+        m1.member_name,
+        COUNT(*) AS total_book_borrowed,
+        SUM(CASE 
+                WHEN DATEDIFF(COALESCE(r1.return_date, CURDATE()), i1.issued_date) > 60 
+                THEN 1 ELSE 0 
+            END) AS overdue_books
+    FROM members m1
+    INNER JOIN issued_status i1
+        ON m1.member_id = i1.issued_member_id
+    INNER JOIN employees e1
+        ON e1.emp_id = i1.issued_emp_id
+    INNER JOIN branch b1
+        ON e1.branch_id = b1.branch_id
+    LEFT JOIN return_status r1
+        ON i1.issued_id = r1.issued_id
+    GROUP BY b1.branch_id, m1.member_id, m1.member_name
+),
+top_ranks as (
+    SELECT
+        *,
+        DENSE_RANK() OVER(PARTITION BY branch_id ORDER BY total_book_borrowed DESC) AS rank_in_branch,
+        ROUND((overdue_books*100/total_book_borrowed),2)as overdue_percentage
+FROM members_branch
+)
+
+SELECT
+    branch_id,
+    member_id,
+    member_name,
+    total_book_borrowed,
+    overdue_books,
+    overdue_percentage,
+    rank_in_branch
+FROM top_ranks
+WHERE rank_in_branch<=3
 
 
