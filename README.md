@@ -466,11 +466,12 @@ FROM top_ranks
 WHERE rank_in_branch<=3
 ```
 
-## 🔹 Reports & Analysis  
-- 📊 **Schema Overview** – Entity relationships and table structures  
-- 📖 **Book Insights** – Popular categories and most-issued books  
-- 👨‍💼 **Employee Analysis** – Salary distribution and performance trends  
-- 🧑‍🤝‍🧑 **Member Reports** – Registration patterns and borrowing history  
+## 🔹 Overall Reports & Analysis  
+- 📖 **Book Reports** – Category-wise distribution, rental income, availability, and overdue books  
+- 👥 **Member Reports** – New registrations, borrowing activity, overdue fines, and top borrowers  
+- 👨‍💼 **Employee Reports** – Staff performance, top issuers, and branch-level hierarchy  
+- 🏢 **Branch Reports** – Number of books issued/returned, total revenue, and top-performing branches  
+- 📊 **Operational Insights** – Book circulation tracking, overdue management, and fine calculation  
 
 ---
 
