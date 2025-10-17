@@ -11,7 +11,7 @@ The **Library Management System** is a SQL-based project designed to simulate th
 - **Database Name**: `library_management`  
 - **Focus Areas**: Database schema design, SQL queries, data analysis  
 
-<img width="800" height="500" alt="image" src="https://github.com/user-attachments/assets/4a9ec27f-cf88-4945-af32-df920e93a813" />
+<img width="800" height="500" alt="image" src="https://github.com/Gokul66-ub/sql_p3_food_delivery_system/blob/main/Gemini_Generated_Image_u70ketu70ketu70k.png" />
 
 ---
 
